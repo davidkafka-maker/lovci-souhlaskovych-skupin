@@ -1,0 +1,1 @@
+# lovci-souhlaskovych-skupin
