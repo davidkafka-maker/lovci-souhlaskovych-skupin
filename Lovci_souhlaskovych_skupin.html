@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Lovci souhláskových skupin</title>
+<style>
+:root{--bg:#140807;--panel:#2b130e;--gold:#ffd36a;--text:#fff7df;--muted:#e8cfaa;--ok:#78f0a0;--bad:#ff6262}
+*{box-sizing:border-box}html,body{height:100%;margin:0}body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:radial-gradient(circle at top,#542014 0,#160806 48%,#050101 100%);color:var(--text)}
+body.mode-challenge{background:radial-gradient(circle at top,#233f16 0,#160806 52%,#030101 100%)}body.mode-test{background:radial-gradient(circle at top,#5a1717 0,#160806 52%,#030101 100%)}
+.wrap{max-width:980px;margin:auto;padding:14px;min-height:100%;display:flex;flex-direction:column;justify-content:center}.card{background:linear-gradient(180deg,rgba(61,27,18,.97),rgba(28,10,7,.97));border:1px solid rgba(255,211,106,.36);border-radius:22px;box-shadow:0 14px 36px #0008;padding:18px}.title{text-align:center;font-size:clamp(30px,6vw,62px);font-weight:1000;color:var(--gold);text-shadow:0 2px 0 #5d260a,0 0 24px #ffb02e55;margin:10px 0}.subtitle{text-align:center;color:var(--muted);font-size:clamp(15px,2.4vw,20px)}
+.row{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;align-items:center;margin-top:14px}.btn{border:0;border-radius:999px;padding:14px 24px;font-weight:1000;font-size:18px;cursor:pointer;box-shadow:0 8px 0 #612507;color:#251006}.challengeBtn{background:linear-gradient(#d0ff9e,#4d9a26);box-shadow:0 8px 0 #1d4a10}.testBtn{background:linear-gradient(#ffb1a9,#c82e2e);box-shadow:0 8px 0 #661111;color:white}.ghost{background:#ffffff12;color:var(--gold);border:1px solid #ffd36a55;box-shadow:none}.input{width:100%;border:2px solid #ffd36a66;border-radius:16px;padding:15px;font-size:22px;background:#fff8e8;color:#1a0804;font-weight:900}.nameBox{max-width:520px;margin:auto;display:flex;flex-direction:column;gap:10px}
+.topbar{display:grid;grid-template-columns:104px 1fr 104px;align-items:start;gap:10px}.seal{width:104px;height:104px;border-radius:50%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:1000;border:3px solid #ffce55;box-shadow:inset 0 -18px 28px #0004,0 7px 18px #0008}.challengeSeal{background:linear-gradient(#d0ff9e,#4d9a26);color:#082000}.testSeal{background:linear-gradient(#ffb1a9,#d83333);color:white}.sectionSeal{background:linear-gradient(#e4a13a,#8c4c12);color:white;font-size:13px;padding:8px}.timeCenter{text-align:center;font-size:clamp(46px,7vw,78px);font-weight:1000;line-height:.95}.status{display:block;margin:8px auto 0;padding:7px 10px;border-radius:999px;border:1px solid #ffd36aaa;background:#0005;font-size:clamp(16px,3vw,25px);color:#7cff26}
+.prompt{text-align:center;color:#ffb0c2;font-size:clamp(20px,3vw,32px);font-weight:1000;margin:12px}.question{border:2px solid #ffbe23dd;border-radius:18px;padding:18px;background:#0004;font-size:clamp(23px,3.7vw,39px);font-weight:1000;text-align:center}.answerGrid{display:grid;grid-template-columns:1fr;gap:14px;margin:18px auto 6px;max-width:430px}.answerBox label{display:block;text-align:center;color:var(--muted);font-weight:900;margin-bottom:7px}.answerInput{width:100%;border:3px solid #ffd36a88;border-radius:18px;padding:15px;background:#fff8e8;color:#1a0804;font-size:clamp(24px,4vw,36px);font-weight:900;text-align:center;text-transform:lowercase}.answerInput.correct{border-color:var(--ok);background:#dfffea}.answerInput.wrong{border-color:var(--bad);background:#ffe1e1}.submitArc{min-width:220px;background:linear-gradient(#ffd873,#d87918);box-shadow:0 8px 0 #7d3608}.feedback{text-align:center;font-size:clamp(20px,4vw,34px);font-weight:1000;min-height:56px;margin:10px}.ok{color:var(--ok)}.bad{color:var(--bad)}.result{text-align:center;font-size:22px;line-height:1.55}.cheat{border-color:#ff2f2f;background:linear-gradient(#5c0808,#170000)}.small{font-size:14px;color:var(--muted);text-align:center}
+@media(max-width:700px){.wrap{padding:6px}.card{padding:10px}.topbar{grid-template-columns:72px 1fr 72px;gap:4px}.seal{width:68px;height:68px;font-size:11px}.timeCenter{font-size:42px}.status{font-size:14px;padding:4px}.question{font-size:clamp(21px,6vw,32px);padding:11px}.answerInput{padding:12px}.row .btn{flex:1 1 150px}}
+</style>
+</head>
+<body><div class="wrap" id="app"></div>
+<script>
+const QUESTION_DATA = `
+Každé ráno si dědeček kupuje ra_í noviny.§nn
+Zemědělci letos vysadili velmi ra_é brambory.§n
+Redakce připravuje pravidelné de_í zpravodajství.§nn
+Novináři přinášeli de_odenní zprávy přímo z místa bojů.§nn
+Na poradě jsme hodnotili týde_í výsledky prodeje.§nn
+Pro účastníky byl připraven celode_í program.§nn
+V trezoru byl uložen velmi ce_ý rukopis.§nn
+Archeologové odkryli mohutný kame_ý val.§nn
+Restaurátor opravil poškozený oke_í rám.§nn
+K obědu nám nabídli také vi_ý střik.§nn
+Soud nakonec uznal obžalovaného nevi_ým.§nn
+Účast na školení byla pro zaměstnance povi_á.§nn
+Po několika deštivých dnech přišlo slu_é počasí.§nn
+Lékař vyšetřil pacientovu rame_í kost.§nn
+Prudké krvácení způsobilo poranění stehe_í tepny.§nn
+Vyšetření odhalilo zúžení tepe_í stěny.§nn
+Královský znak zdobila zlatá koru_í klenba.§nn
+Doplňte do formuláře všechny jme_é údaje.§nn
+Úřad postupoval podle platných záko_ých předpisů.§nn
+Lékaři ocenili rychlý a úči_ý zásah záchranářů.§nn
+Všichni obdivovali jeho hrdi_ý postoj.§nn
+Děti si prohlížely staré rodi_é fotografie.§nn
+Nad polem zakroužilo hejno havra_ích ptáků.§n
+V lese jsme objevili několik jele_ích stop.§n
+Učitel musel oba rozhádané žáky o_ělit.§dd
+Kvůli poruše jsme museli odjezd o_álit.§dd
+Po namáhavém výstupu si potřeboval chvíli o_echnout.§dd
+Město připravilo program o_lužení pro lidi v nouzi.§dd
+Kosatec se rozmnožuje pomocí o_enků.§dd
+O této možnosti už nemá smysl dále o_iskutovávat.§dd
+Vojáci nastoupili před službu k po_ůstojníkovi.§dd
+Rolníci se museli řídit příkazy svého po_aného pána.§dd
+Po jeho poznámce se ředitel okamžitě ro_lobil.§zz
+Dětské oči se při pohledu na dárky ro_ářily.§zz
+Nespravedlivé obvinění dokázalo dav rychle ro_uřit.§zz
+Na fotografii se usmíval téměř be_ubý stařík.§zz
+Firma slibovala zákazníkům naprosto be_trátovou investici.§zz
+Sirius je po Slunci ne_asnější hvězdou pozorovatelnou ze Země.§jj
+Vybrali jsme ne_ednodušší možné řešení.§jj
+Prodavačka nám doporučila ten ne_emnější materiál.§jj
+Ve vitríně ležel vzácný babi_in náhrdelník.§čč
+Na stole zůstala rozečtená Ani_ina kniha.§čč
+Z lesa se ozývalo hlasité kuka_í volání.§čč
+Dítě si přitisklo k tváři mě_ý polštář.§kk
+Po úpravě působil celý pokoj mnohem he_ím dojmem.§zč
+Po týdnu bez deště byla půda ještě su_í.§šš
+Po zavření oken byla místnost podstatně ti_í.§šš
+Druhá police je o něco vy_í než první.§šš
+Turisté si v hostinci objednali jeden pů_itr limonády.§ll
+Škola připravila nový dvo_azyčný česko-německý slovník.§jj
+Ošetřovatel připravil pro mládě speciální slo_í výživu.§n
+Nad opuštěným domem se ozývalo hlasité vra_í krákání.§n
+Obchodník nabízel pravou ku_í kožešinu.§n
+Diváci obdivovali dokonale nacvičené lachta_í vystoupení.§n
+Mládě se ukrylo do kloka_í kapsy.§n
+Nad vchodem do salaše visely mohutné bera_í rohy.§n
+Na dvoře jsme našli barevné kroca_í pero.§n
+Na ledové kře odpočívalo tule_í mládě.§n
+Každý večer si zapisoval zážitky do cestovního de_íku.§n
+Aktuální ceny najdete v přiloženém ce_íku.§n
+Na jižním svahu se rozkládala rozsáhlá vi_ice.§n
+Vítr prudce zabouchl dřevěné oke_ice.§n
+Poštovní známka je úředně vydávaná ce_ina.§n
+Babička mi upletla teplý vl_ěný svetr.§n
+Děti vyráběly drobné postavičky z hli_ěné hmoty.§n
+Nápoj přinesli ve vysoké skle_ěné nádobě.§n
+Na hlavě měl široký sla_ěný klobouk.§m
+Záchranáři ošetřili lehce zra_ěného turistu.§n
+Hasiči vynesli z domu několik zachrá_ěných obrazů.§n
+Porota vystavila všechny oce_ěné práce ve vestibulu.§n
+Město bylo obklopeno důkladně opev_ěnými hradbami.§n
+Dokument podepsal právně zmoc_ěný zástupce společnosti.§n
+Expozice představovala každodenní život středo_ěkého člověka.§v
+Archeologové zkoumali pozůstatky staro_ěkého sídliště.§v
+Historik se specializuje na počátky novo_ěkého státu.§v
+Staré sklo bylo mnohem kře_í, než jsme očekávali.§hč
+Průchod mezi domy byl stále u_í.§žš
+Po odstranění kamení byla cesta mnohem sna_í.§zš
+Vyschlé jezero bylo letos ještě mě_í než loni.§lč
+Nové vydání učebnice je podstatně kra_í.§tš
+Po setmění byl obrys postavy stále ři_í.§dš
+Děti při hře nechtěně ro_ypaly všechny korálky.§zs
+Technik v sále ro_vítil všechna světla.§zs
+Soudce musel dlouho ro_uzovat složitý spor.§zs
+Při hádce se snažil ostatní ještě více ro_ílit.§zč
+Poškozený přístroj byl už prakticky bezce_ý.§nn
+Řečník pronesl před davem plame_ý projev.§nn
+Pod skálou vyvěral čistý prame_ý proud.§nn
+Soutěž prověřila všestra_é schopnosti účastníků.§nn
+Krajina měla převážně rovi_ý charakter.§nn
+Na závěr porady ředitel přednesl souhr_ou zprávu.§nn
+Nový motor je podstatně výko_ější než předchozí model.§nn
+Opuštěné město zůstalo proti útoku zcela bezbra_é.§nn
+Dělníci při práci používali předepsané ochra_é pomůcky.§nn
+Článek nabídl značně jednostra_ý pohled na celý spor.§nn
+Geometři narýsovali dvourame_ý úhel.§nn
+Písmeno x představuje v rovnici neznámou promě_ou.§nn
+Nový stolek je o něco ni_í než původní.§žš
+Druhá věž je podstatně vy_í než první.§šš
+Oprava byla nakonec mnohem dra_í, než jsme čekali.§žš
+Nejbli_í zastávka se nachází za kostelem.§žš
+Potápěči sestoupili do ještě hlu_í části jezera.§bš
+Nový materiál je mnohem le_í než ocel.§hč
+Po upečení bylo těsto podstatně mě_í.§kč
+Zralé ovoce bývá mnohem sla_í.§dš
+Po obroušení byl povrch výrazně hla_í.§dš
+Vítr byl každou minutou pru_í.§dš
+Po několika neúrodných letech byla obec ještě chu_í.§dš
+Provoz byl stále hu_í a hlučnější.§tš
+Po vyprání byla košile mnohem či_í.§tš
+Nakonec jsme nalezli ještě jednodu_í řešení.§šš
+Na stole zůstal ležet ma_in dopis.§tč
+Malá Katka hledala svůj sešit; byl to Kat_in sešit.§č
+Učitel pochválil A_in referát.§nn
+Na stole ležel Ja_in mobilní telefon.§n
+Všichni obdivovali Ha_in nový účes.§n
+Na podlaze zůstaly drobné ko_ičí stopy.§č
+Z koruny stromu se ozýval hlasitý p_ačí zpěv.§t
+V blátě jsme objevili čerstvé vl_í stopy.§č
+Politik se vyhýbal každému be_ásadovému kompromisu.§zz
+V diktátu se objevilo několik be_vučných souhlásek.§zz
+Kostelník před obřadem hlasitě ro_vonil zvony.§zz
+Všechny zvonky se najednou ro_vučely.§zz
+Král se rozhodl princeznu o_at cizímu panovníkovi.§dd
+Skauti si založili nový turistický o_íl.§dd
+Pes zůstal svému pánovi naprosto o_aný.§dd
+Slabý motor byl pro tak těžké vozidlo značně po_imenzovaný.§dd
+Program nabídl několik pře_efinovaných možností.§dd
+Vybral si ze všech uchazečů toho ne_istějšího.§jj
+Průvodce upozornil na ne_edovatějšího hada celé oblasti.§jj
+Výzkumníci použili nový dvo_aderný procesor.§jj
+Rodiče vybrali nové vybavení pro dě_kou skupinu.§ts
+Radnice schválila opravu mě_ké knihovny.§sts
+Spisovatel kritizoval povrchní hodnoty svě_ké společnosti.§ts
+V románu se hrdina snaží pochopit smysl li_ké existence.§ds
+Obchodník získal díky svému boha_ví značný vliv.§tstv
+Mužstvo oslavovalo nečekané vítě_ví v turnaji.§zstv
+Vítězné mu_vo převzalo pohár z rukou starosty.§žst
+Velké mno_ví sněhu zablokovalo horské silnice.§žst
+Celé li_vo se podle pověsti spojilo proti nepříteli.§dst
+Jeho výpověď přinesla důležité svěde_ví o celé události.§ct
+Sourozenci se přeli o rodinné dědi_ví.§ct
+Ve středověku byl nevolník po_aným svého pána.§dd
+`.trim();
+
+const QUESTIONS=QUESTION_DATA.split('\n').map((line,index)=>{const [text,answer]=line.split('§');return{id:index+1,text,answer}});
+const SHEET_ID="1pkj1ISkzdtgNphGLGwakezT1WzHJxz-pv2OLnCmfnLk";
+const GAS_WEB_APP_URL="https://script.google.com/macros/s/AKfycbzrwi1N_f2ddRf2XsOLBtDEFmcxAdWPpW170_dtGNSXUl8vejZl1dhxkqMYhjdxVs8u/exec";
+const RESULTS_SHEET_URL="https://docs.google.com/spreadsheets/d/1pkj1ISkzdtgNphGLGwakezT1WzHJxz-pv2OLnCmfnLk/edit?usp=sharing";
+const TIME_LIMIT=10,TEST_COUNT=15,CHALLENGE_TARGET=30;
+let state={screen:'home',mode:null,name:'',clazz:'',pool:[],current:null,index:0,score:0,correct:0,wrong:0,streak:0,timeLeft:0,timer:null,locked:false,cheated:false,finishSent:false};
+const app=document.getElementById('app');
+function esc(s){return String(s??'').replace(/[&<>\"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;'}[m]))}
+function normalize(s){return String(s??'').normalize('NFC').trim().toLocaleLowerCase('cs-CZ')}
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function render(h,mode=state.mode){document.body.className=mode?'mode-'+mode:'';app.innerHTML=h;document.querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>actions[b.dataset.act]())}
+function home(){clearTimer();state={...state,screen:'home',mode:null,score:0,correct:0,wrong:0,streak:0,cheated:false,finishSent:false};render(`<div class="card"><h1 class="title">Lovci souhláskových skupin</h1><p class="subtitle">Doplň do rámečku všechny chybějící souhlásky.</p><div class="row"><button class="btn challengeBtn" data-act="nameChallenge">VÝZVA</button><button class="btn testBtn" data-act="nameTest">TEST</button></div><div class="row"><a class="btn ghost" href="${RESULTS_SHEET_URL}" target="_blank" rel="noopener noreferrer" style="text-decoration:none">VÝSLEDKOVÁ TABULKA</a></div><p class="small">VÝZVA: 30 správných odpovědí v řadě = jednička. TEST: 15 úloh, každá za 2 body. Čas: 20 s na úlohu.<br>Databáze v této verzi: ${QUESTIONS.length} úloh.</p></div>`,null)}
+function nameScreen(mode){state.mode=mode;render(`<div class="card"><h1 class="title">${mode==='challenge'?'VÝZVA':'TEST'}</h1><div class="nameBox"><input class="input" id="name" placeholder="Jméno žáka"><input class="input" id="clazz" placeholder="Třída"><button class="btn ${mode==='challenge'?'challengeBtn':'testBtn'}" id="start">ZAČÍT</button><button class="btn ghost" data-act="home">HLAVNÍ MENU</button></div></div>`,mode);document.getElementById('start').onclick=()=>{state.name=document.getElementById('name').value.trim();state.clazz=document.getElementById('clazz').value.trim();if(!state.name||!state.clazz){alert('Vyplň jméno i třídu.');return}start(mode)}}
+function start(mode){state={...state,screen:'question',mode,score:0,correct:0,wrong:0,streak:0,index:0,locked:false,cheated:false,finishSent:false,pool:shuffle(QUESTIONS)};if(mode==='test')state.pool=state.pool.slice(0,TEST_COUNT);next()}
+function next(){clearTimer();state.locked=false;if(state.mode==='challenge'){if(!state.pool.length)state.pool=shuffle(QUESTIONS);state.current=state.pool.pop()}else{if(state.index>=state.pool.length)return finishTest();state.current=state.pool[state.index]}renderQuestion();startTimer()}
+function renderQuestion(){const m=state.mode,q=state.current;const status=m==='challenge'?`SÉRIE ${state.streak}/${CHALLENGE_TARGET}`:`ÚLOHA ${state.index+1}/${state.pool.length} • BODY ${state.score}/30`;render(`<div class="card"><div class="topbar"><div class="seal ${m==='challenge'?'challengeSeal':'testSeal'}">${m==='challenge'?'VÝZVA':'TEST'}</div><div class="timeCenter"><span id="time">${TIME_LIMIT}</span><span class="status">${status}</span></div><div class="seal sectionSeal">SOUHLÁSKOVÉ<br>SKUPINY</div></div><div class="prompt">Doplň chybějící skupinu hlásek</div><div class="question">${esc(q.text)}</div><div class="answerGrid"><div class="answerBox"><label for="answer">Chybějící skupina</label><input class="answerInput" id="answer" autocomplete="off" autocapitalize="none" spellcheck="false" aria-label="Chybějící skupina hlásek"></div></div><div class="row"><button class="btn submitArc" id="submit">POTVRDIT</button></div><div class="feedback" id="fb"></div><div class="small"><a href="#" data-act="home" style="color:var(--muted)">Hlavní menu</a></div></div>`,m);const input=document.getElementById('answer');document.getElementById('submit').onclick=answer;input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();answer()}});input.focus()}
+function reveal(q){return q.text.replace('_',q.answer)}
+function answer(){if(state.locked)return;const input=document.getElementById('answer');state.locked=true;clearTimer();const good=normalize(input.value)===normalize(state.current.answer);input.disabled=true;document.getElementById('submit').disabled=true;input.classList.add(good?'correct':'wrong');const fb=document.getElementById('fb');if(good){state.correct++;state.streak++;if(state.mode==='test')state.score+=2;fb.innerHTML=`<span class="ok">SPRÁVNĚ!${state.mode==='test'?' +2 BODY':''}</span>`;soundCorrect();if(state.mode==='challenge'&&state.streak>=CHALLENGE_TARGET)return setTimeout(finishChallenge,700)}else{state.wrong++;state.streak=0;fb.innerHTML=`<span class="bad">CHYBA – SÉRIE ZAČÍNÁ ZNOVU</span><br><span class="small">Správně: ${esc(state.current.answer)} → ${esc(reveal(state.current))}</span>`;soundWrong()}if(state.mode==='test')state.index++;setTimeout(next,good?750:1800)}
+function timeout(){if(state.locked)return;state.locked=true;state.wrong++;state.streak=0;const input=document.getElementById('answer');input.disabled=true;input.classList.add(normalize(input.value)===normalize(state.current.answer)?'correct':'wrong');document.getElementById('submit').disabled=true;document.getElementById('fb').innerHTML=`<span class="bad">ČAS VYPRŠEL – SÉRIE ZAČÍNÁ ZNOVU</span><br><span class="small">Správně: ${esc(state.current.answer)} → ${esc(reveal(state.current))}</span>`;soundWrong();if(state.mode==='test')state.index++;setTimeout(next,1800)}
+function startTimer(){state.timeLeft=TIME_LIMIT;updateTime();state.timer=setInterval(()=>{state.timeLeft--;updateTime();if(state.timeLeft<=0){clearTimer();timeout()}},1000)}
+function updateTime(){const e=document.getElementById('time');if(e)e.textContent=state.timeLeft}function clearTimer(){if(state.timer){clearInterval(state.timer);state.timer=null}}
+function grade(s){if(s>=29)return 1;if(s>=27)return 2;if(s>=25)return 3;if(s>=23)return 4;return 5}
+function finishTest(){clearTimer();state.screen='finish';const z=state.cheated?6:grade(state.score);sendResult(z,30,'TEST');render(`<div class="card"><h1 class="title">VÝSLEDEK</h1><div class="result"><b>${esc(state.name)}</b> • ${esc(state.clazz)}<br><b>Body:</b> ${state.score}/30<br><b>Známka:</b> ${z}</div><div class="row"><button class="btn" data-act="home">HLAVNÍ MENU</button></div></div>`,'test')}
+function finishChallenge(){clearTimer();state.screen='finish';sendResult(1,state.correct+state.wrong,'VÝZVA');render(`<div class="card"><div class="result"><b>Dokázal jsi doplnit 30 souhláskových skupin za sebou správně, a tak máš jedničku!</b></div><div class="row"><button class="btn challengeBtn" data-act="home">HLAVNÍ MENU</button></div></div>`,'challenge')}
+function buildPayload(z,total,kind){return{timestamp:new Date().toISOString(),jmeno:state.name,trida:state.clazz,znamka:z,rezim:kind.toLowerCase(),oddil:'souhláskové skupiny',body:state.score,celkem:total,spravne:state.correct,spatne:state.wrong,poznamka:state.cheated?'PODVOD':kind,sheetId:SHEET_ID,app:'Lovci souhláskových skupin'}}
+function sendResult(z,total,kind,urgent=false){if(state.finishSent&&!urgent)return;state.finishSent=true;const p=buildPayload(z,total,kind),params=new URLSearchParams();Object.entries(p).forEach(([k,v])=>params.append(k,String(v??'')));try{if(urgent&&navigator.sendBeacon){navigator.sendBeacon(GAS_WEB_APP_URL,new Blob([params.toString()],{type:'application/x-www-form-urlencoded'}))}else fetch(GAS_WEB_APP_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:params.toString(),keepalive:true})}catch(e){}}
+function activeProtected(){return ['test','challenge'].includes(state.mode)&&state.screen==='question'}
+function cheatFinish(reason){soundCheat();if(!activeProtected())return;state.cheated=true;state.locked=true;state.screen='finish';clearTimer();sendResult(6,state.mode==='test'?30:state.correct+state.wrong,'PODVOD: '+reason,true);render(`<div class="card cheat"><h1 class="title">PODVOD</h1><div class="result">Pokus byl ukončen kvůli opuštění testovacího okna.<br><b>Známka: 6</b></div><div class="row"><button class="btn" data-act="home">HLAVNÍ MENU</button></div></div>`,state.mode)}
+let audioCtx=null;function unlockAudio(){try{audioCtx=audioCtx||new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
+function tone(freq,dur,gain=.08,type='sine',delay=0){try{unlockAudio();if(!audioCtx)return;const t=audioCtx.currentTime+delay,o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type=type;o.frequency.setValueAtTime(freq,t);g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(gain,t+.02);g.gain.exponentialRampToValueAtTime(.0001,t+dur);o.connect(g);g.connect(audioCtx.destination);o.start(t);o.stop(t+dur+.03)}catch(e){}}
+function soundCorrect(){tone(720,.08,.06);tone(980,.10,.05,'sine',.07)}function soundWrong(){tone(150,.20,.22,'square');tone(110,.23,.20,'sawtooth',.17)}function soundCheat(){tone(95,.65,.28,'sawtooth');tone(70,.65,.24,'square',.35)}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)cheatFinish('přepnutí mimo stránku')});window.addEventListener('pagehide',()=>cheatFinish('opuštění stránky'));window.addEventListener('beforeunload',e=>{if(activeProtected()){e.preventDefault();e.returnValue=''}});window.addEventListener('blur',()=>setTimeout(()=>{if(activeProtected()&&document.visibilityState==='visible'&&!document.hasFocus())cheatFinish('ztráta aktivního okna')},650));
+const actions={home,nameChallenge:()=>nameScreen('challenge'),nameTest:()=>nameScreen('test')};
+console.assert(QUESTIONS.length===143,`Databáze má ${QUESTIONS.length} položek místo 143.`);console.assert(QUESTIONS.every(q=>(q.text.match(/_/g)||[]).length===1&&q.answer), 'Chyba ve formátu databáze.');home();
+</script></body></html>
